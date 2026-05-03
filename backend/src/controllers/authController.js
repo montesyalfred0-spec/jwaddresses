@@ -29,7 +29,7 @@ export const login = async (req, res) => {
 
     res.cookie('jwt', token, {
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000
     });

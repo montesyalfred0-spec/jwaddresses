@@ -1,15 +1,7 @@
 import axios from 'axios';
 
-const getBaseURL = () => {
-  const hostname = window.location.hostname;
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return '/api';
-  }
-  return `http://${hostname}:3000/api`;
-};
-
 const api = axios.create({
-  baseURL: getBaseURL(),
+  baseURL: '/api',
   withCredentials: true
 });
 

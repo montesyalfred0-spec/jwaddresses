@@ -22,6 +22,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/territories', territoryRoutes);
 app.use('/api/addresses', addressRoutes);
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
