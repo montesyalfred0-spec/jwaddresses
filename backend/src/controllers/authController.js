@@ -29,7 +29,7 @@ export const login = async (req, res) => {
 
     res.cookie('jwt', token, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000
     });
@@ -68,6 +68,10 @@ export const me = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.clearCookie('jwt');
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production'
+  });
   res.json({ message: 'Logged out successfully' });
 };

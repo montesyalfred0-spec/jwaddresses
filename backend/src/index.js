@@ -12,10 +12,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: true,
+const corsOptions = {
+  origin: (origin, callback) => {
+    // En desarrollo, permitir todos los orígenes
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    // En producción, usar whitelist
+    const corsOrigins = process.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || [];
+    if (!origin || corsOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 
