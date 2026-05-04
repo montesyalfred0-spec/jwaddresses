@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const redisClient = new Redis({
+const redisConfig = {
   host: process.env.REDIS_HOST || 'localhost',
   port: process.env.REDIS_PORT || 6379,
   password: process.env.REDIS_PASSWORD || undefined,
@@ -11,7 +11,14 @@ const redisClient = new Redis({
     const delay = Math.min(times * 50, 2000);
     return delay;
   }
-});
+};
+
+// Habilitar TLS en producción para encriptar tráfico Redis
+if (process.env.NODE_ENV === 'production') {
+  redisConfig.tls = {};
+}
+
+const redisClient = new Redis(redisConfig);
 
 redisClient.on('error', (err) => {
   console.error('Redis connection error:', err);
