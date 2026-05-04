@@ -6,7 +6,15 @@ import { addressSchema } from '../validations/schemas.js';
 
 const router = express.Router();
 
-router.get('/neighborhood/:neighborhoodId', authMiddleware, getAddresses);
+const validateNeighborhoodId = (req, res, next) => {
+  const id = parseInt(req.params.neighborhoodId, 10);
+  if (isNaN(id) || id <= 0) {
+    return res.status(400).json({ error: 'Invalid neighborhood ID' });
+  }
+  next();
+};
+
+router.get('/neighborhood/:neighborhoodId', authMiddleware, validateNeighborhoodId, getAddresses);
 router.post('/', authMiddleware, validate(addressSchema), createAddress);
 
 export default router;
