@@ -16,6 +16,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={isAuthenticated ? <Navigate to="/territories" /> : <Login />} />
       <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
+        <Route index element={<Navigate to="territories" />} />
         <Route path="territories" element={<TerritoryList />} />
         <Route path="neighborhood/:neighborhoodId" element={<TerritoryDetail />} />
       </Route>
