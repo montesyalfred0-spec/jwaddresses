@@ -34,7 +34,7 @@ export default function Login() {
             <MapPin className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">JW Addresses</h1>
-          <p className="text-white/60 mt-2 text-sm">Territory management system</p>
+          <p className="text-white/60 mt-2 text-sm">Sistema de gestión de territorios</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
@@ -46,27 +46,27 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full"
-                placeholder="Enter your username"
+                placeholder="Ingrese su usuario"
                 required
                 autoComplete="username"
               />
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pr-12"
-                  placeholder="Enter your password"
+                  placeholder="Ingrese su contraseña"
                   required
                   autoComplete="current-password"
                 />
@@ -92,10 +92,10 @@ export default function Login() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Signing in...
+                  Ingresando...
                 </span>
               ) : (
-                'Sign In'
+                'Ingresar'
               )}
             </button>
           </form>

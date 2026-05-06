@@ -32,7 +32,7 @@ export default function Layout() {
             className="flex items-center gap-1.5 bg-jw-800 hover:bg-jw-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
+            <span>Salir</span>
           </button>
         </div>
       </nav>

@@ -10,7 +10,7 @@ import {
 export default function TerritoryDetail() {
   const { neighborhoodId } = useParams();
   const { state } = useLocation();
-  const neighborhoodName = state?.neighborhoodName || 'Addresses';
+  const neighborhoodName = state?.neighborhoodName || 'Direcciones';
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
@@ -53,7 +53,7 @@ export default function TerritoryDetail() {
     e.preventDefault();
     setCreateError(null);
     if (!formData.location_string) {
-      setCreateError('GPS location is required. Please click "Get GPS" to capture your location.');
+      setCreateError('Se requiere ubicación GPS. Haga clic en "Obtener GPS" para capturar su ubicación.');
       return;
     }
     setSaving(true);
@@ -71,7 +71,7 @@ export default function TerritoryDetail() {
       setShowForm(false);
       setCreateError(null);
       setSaving(false);
-      setSuccessMsg('Address saved successfully');
+      setSuccessMsg('Dirección guardada exitosamente');
       fetchAddresses();
     } catch (error) {
       setSaving(false);
@@ -94,12 +94,12 @@ export default function TerritoryDetail() {
           setCreateError(null);
         },
         (error) => {
-          setCreateError('Could not get location. Please enter the Google Maps link manually.');
+          setCreateError('No se pudo obtener la ubicación. Ingrese el enlace de Google Maps manualmente.');
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      setCreateError('Geolocation is not supported by this browser.');
+      setCreateError('La geolocalización no es compatible con este navegador.');
     }
   };
 
@@ -107,7 +107,7 @@ export default function TerritoryDetail() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="w-10 h-10 border-4 border-jw-700 border-t-transparent rounded-full animate-spin-slow" />
-        <p className="mt-4 text-jwtextm text-sm">Loading addresses...</p>
+        <p className="mt-4 text-jwtextm text-sm">Cargando direcciones...</p>
       </div>
     );
   }
@@ -121,7 +121,7 @@ export default function TerritoryDetail() {
           onClick={fetchAddresses}
           className="bg-jw-700 text-white px-5 py-2.5 rounded-lg hover:bg-jw-800 transition-colors text-sm font-medium"
         >
-          Retry
+          Reintentar
         </button>
       </div>
     );
@@ -141,7 +141,7 @@ export default function TerritoryDetail() {
         className="inline-flex items-center gap-1.5 text-jwtextm hover:text-jw-700 transition-colors mb-6 text-sm font-medium"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Territories
+        Volver a Territorios
       </Link>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -151,7 +151,7 @@ export default function TerritoryDetail() {
             <h1 className="text-2xl font-bold text-jwtext">{neighborhoodName}</h1>
           </div>
           <p className="text-jwtextm text-sm mt-1 ml-7">
-            {addresses.length} {addresses.length === 1 ? 'address' : 'addresses'} recorded
+            {addresses.length} {addresses.length === 1 ? 'dirección registrada' : 'direcciones registradas'}
           </p>
         </div>
         <button
@@ -159,7 +159,7 @@ export default function TerritoryDetail() {
           className="flex items-center gap-2 bg-jw-700 text-white px-5 py-2.5 rounded-lg hover:bg-jw-800 transition-colors text-sm font-medium shadow-sm"
         >
           <Plus className="w-4 h-4" />
-          {showForm ? 'Cancel' : 'Add Address'}
+          {showForm ? 'Cancelar' : 'Agregar Dirección'}
         </button>
       </div>
 
@@ -170,7 +170,7 @@ export default function TerritoryDetail() {
         >
           <h2 className="text-lg font-semibold text-jwtext mb-5 flex items-center gap-2">
             <Home className="w-4 h-4 text-jw-700" />
-            New Address
+            Nueva Dirección
           </h2>
 
           {createError && (
@@ -181,59 +181,59 @@ export default function TerritoryDetail() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full"
-                placeholder="Full name"
+                placeholder="Nombre completo"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Age</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Edad</label>
               <input
                 type="number"
                 value={formData.age}
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                 className="w-full"
-                placeholder="Optional"
+                placeholder="Opcional"
                 min="0"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Family</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Familia</label>
               <input
                 type="text"
                 value={formData.family}
                 onChange={(e) => setFormData({ ...formData, family: e.target.value })}
                 className="w-full"
-                placeholder="e.g., mama martha delgado"
+                placeholder="ej. mamá martha delgado"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Dirección</label>
               <input
                 type="text"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 className="w-full"
-                placeholder="Street address"
+                placeholder="Dirección completa"
                 required
               />
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Ubicación</label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={formData.location_string}
                 onChange={(e) => setFormData({ ...formData, location_string: e.target.value })}
                 className="flex-1"
-                placeholder="Google Maps link"
+                placeholder="Enlace de Google Maps"
               />
               <button
                 type="button"
@@ -241,7 +241,7 @@ export default function TerritoryDetail() {
                 className="flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium whitespace-nowrap"
               >
                 <Navigation className="w-4 h-4" />
-                Get GPS
+                Obtener GPS
               </button>
             </div>
           </div>
@@ -257,12 +257,12 @@ export default function TerritoryDetail() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Saving...
+                Guardando...
               </>
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                Save Address
+                Guardar Dirección
               </>
             )}
           </button>
@@ -272,8 +272,8 @@ export default function TerritoryDetail() {
       {addresses.length === 0 && !showForm && (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-100 animate-fade-in">
           <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-jwtextm font-medium">No addresses yet</p>
-          <p className="text-gray-400 text-sm mt-1">Click "Add Address" to record the first one</p>
+          <p className="text-jwtextm font-medium">Aún no hay direcciones</p>
+          <p className="text-gray-400 text-sm mt-1">Haga clic en "Agregar Dirección" para registrar la primera</p>
         </div>
       )}
 
@@ -300,7 +300,7 @@ export default function TerritoryDetail() {
                     {addr.age && (
                       <p className="text-sm text-jwtextm flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        Age: {addr.age}
+                        Edad: {addr.age}
                       </p>
                     )}
                     <p className="text-sm text-jwtextm flex items-center gap-1.5">

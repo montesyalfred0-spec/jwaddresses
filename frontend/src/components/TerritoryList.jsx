@@ -35,7 +35,7 @@ export default function TerritoryList() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="w-10 h-10 border-4 border-jw-700 border-t-transparent rounded-full animate-spin-slow" />
-        <p className="mt-4 text-jwtextm text-sm">Loading territories...</p>
+        <p className="mt-4 text-jwtextm text-sm">Cargando territorios...</p>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function TerritoryList() {
           className="flex items-center gap-2 bg-jw-700 text-white px-5 py-2.5 rounded-lg hover:bg-jw-800 transition-colors text-sm font-medium"
         >
           <RefreshCw className="w-4 h-4" />
-          Retry
+          Reintentar
         </button>
       </div>
     );
@@ -60,8 +60,8 @@ export default function TerritoryList() {
     return (
       <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
         <Map className="w-16 h-16 text-gray-300 mb-4" />
-        <h2 className="text-xl font-semibold text-jwtext mb-1">No territories found</h2>
-        <p className="text-jwtextm text-sm">Territories will appear here once configured.</p>
+        <h2 className="text-xl font-semibold text-jwtext mb-1">No se encontraron territorios</h2>
+        <p className="text-jwtextm text-sm">Los territorios aparecerán aquí cuando estén configurados.</p>
       </div>
     );
   }
@@ -73,9 +73,9 @@ export default function TerritoryList() {
           <div className="p-2 bg-jw-700 rounded-lg">
             <Map className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-jwtext">Territories</h1>
+          <h1 className="text-2xl font-bold text-jwtext">Territorios</h1>
         </div>
-        <p className="text-jwtextm text-sm ml-14">Select a neighborhood to manage addresses</p>
+        <p className="text-jwtextm text-sm ml-14">Seleccione un barrio para gestionar las direcciones</p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -92,7 +92,7 @@ export default function TerritoryList() {
                   <h2 className="text-lg font-semibold text-jwtext">{territory.name}</h2>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${territoryColors[idx % territoryColors.length]}`}>
-                  {neighborhoods.length} {neighborhoods.length === 1 ? 'neighborhood' : 'neighborhoods'}
+                  {neighborhoods.length} {neighborhoods.length === 1 ? 'barrio' : 'barrios'}
                 </span>
               </div>
 
