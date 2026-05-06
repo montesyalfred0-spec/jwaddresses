@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans;
+    background-color: #F7F5F2;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="number"],
+  textarea {
+    @apply bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm
+           focus:outline-none focus:ring-2 focus:ring-jw-700 focus:border-transparent
+           placeholder:text-gray-400 transition-colors;
+  }
+
+  button {
+    @apply transition-all duration-200 active:scale-[0.98];
+  }
+}

@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { addressAPI } from '../services/api';
+import {
+  MapPin, User, Users, Home, Navigation, Save,
+  ExternalLink, Plus, ArrowLeft, AlertTriangle, CheckCircle,
+  Clock,
+} from 'lucide-react';
 
 export default function TerritoryDetail() {
   const { neighborhoodId } = useParams();
@@ -11,6 +16,8 @@ export default function TerritoryDetail() {
   const [fetchError, setFetchError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [createError, setCreateError] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -22,6 +29,13 @@ export default function TerritoryDetail() {
   useEffect(() => {
     fetchAddresses();
   }, [neighborhoodId]);
+
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => setSuccessMsg(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg]);
 
   const fetchAddresses = async () => {
     try {
@@ -42,6 +56,7 @@ export default function TerritoryDetail() {
       setCreateError('GPS location is required. Please click "Get GPS" to capture your location.');
       return;
     }
+    setSaving(true);
     try {
       const addressData = {
         name: formData.name,
@@ -55,8 +70,11 @@ export default function TerritoryDetail() {
       setFormData({ name: '', age: '', family: '', address: '', location_string: '' });
       setShowForm(false);
       setCreateError(null);
+      setSaving(false);
+      setSuccessMsg('Address saved successfully');
       fetchAddresses();
     } catch (error) {
+      setSaving(false);
       const errData = error.response?.data;
       if (Array.isArray(errData?.error)) {
         setCreateError(errData.error.map(e => e.message).join(', '));
@@ -73,145 +91,240 @@ export default function TerritoryDetail() {
           const { latitude, longitude } = position.coords;
           const locationString = `https://www.google.com/maps?q=${latitude},${longitude}`;
           setFormData({ ...formData, location_string: locationString });
+          setCreateError(null);
         },
         (error) => {
-          console.error('Error getting location:', error);
           setCreateError('Could not get location. Please enter the Google Maps link manually.');
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      setCreateError('Geolocation is not supported by this browser. Please enter the Google Maps link manually.');
+      setCreateError('Geolocation is not supported by this browser.');
     }
   };
 
-  if (loading) return <div className="text-center p-8">Loading...</div>;
-  if (fetchError) return (
-    <div className="text-center p-8">
-      <p className="text-red-600 mb-4">{fetchError}</p>
-      <button onClick={fetchAddresses} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        Retry
-      </button>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="w-10 h-10 border-4 border-jw-700 border-t-transparent rounded-full animate-spin-slow" />
+        <p className="mt-4 text-jwtextm text-sm">Loading addresses...</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
+        <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
+        <p className="text-red-600 font-medium mb-4">{fetchError}</p>
+        <button
+          onClick={fetchAddresses}
+          className="bg-jw-700 text-white px-5 py-2.5 rounded-lg hover:bg-jw-800 transition-colors text-sm font-medium"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <Link to="/territories" className="text-blue-500 hover:underline mb-4 inline-block">
-        ← Back to Territories
+    <div className="max-w-3xl mx-auto">
+      {successMsg && (
+        <div className="fixed top-20 right-4 z-50 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up">
+          <CheckCircle className="w-4 h-4" />
+          <span className="text-sm font-medium">{successMsg}</span>
+        </div>
+      )}
+
+      <Link
+        to="/territories"
+        className="inline-flex items-center gap-1.5 text-jwtextm hover:text-jw-700 transition-colors mb-6 text-sm font-medium"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Territories
       </Link>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{neighborhoodName}</h1>
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <MapPin className="w-5 h-5 text-jw-700" />
+            <h1 className="text-2xl font-bold text-jwtext">{neighborhoodName}</h1>
+          </div>
+          <p className="text-jwtextm text-sm mt-1 ml-7">
+            {addresses.length} {addresses.length === 1 ? 'address' : 'addresses'} recorded
+          </p>
+        </div>
         <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => { setShowForm(!showForm); setCreateError(null); }}
+          className="flex items-center gap-2 bg-jw-700 text-white px-5 py-2.5 rounded-lg hover:bg-jw-800 transition-colors text-sm font-medium shadow-sm"
         >
+          <Plus className="w-4 h-4" />
           {showForm ? 'Cancel' : 'Add Address'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6">
-          {createError && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{createError}</div>}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 animate-slide-up"
+        >
+          <h2 className="text-lg font-semibold text-jwtext mb-5 flex items-center gap-2">
+            <Home className="w-4 h-4 text-jw-700" />
+            New Address
+          </h2>
+
+          {createError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-5 animate-fade-in">
+              {createError}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 mb-2">Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full"
+                placeholder="Full name"
                 required
               />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Age</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Age</label>
               <input
                 type="number"
                 value={formData.age}
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full"
+                placeholder="Optional"
+                min="0"
               />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Family</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Family</label>
               <input
                 type="text"
                 value={formData.family}
                 onChange={(e) => setFormData({ ...formData, family: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full"
                 placeholder="e.g., mama martha delgado"
               />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
               <input
                 type="text"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full"
+                placeholder="Street address"
                 required
               />
             </div>
           </div>
+
           <div className="mt-4">
-            <label className="block text-gray-700 mb-2">Location</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Location</label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={formData.location_string}
                 onChange={(e) => setFormData({ ...formData, location_string: e.target.value })}
-                className="flex-1 p-2 border rounded"
+                className="flex-1"
                 placeholder="Google Maps link"
               />
               <button
                 type="button"
                 onClick={getLocation}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                className="flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium whitespace-nowrap"
               >
+                <Navigation className="w-4 h-4" />
                 Get GPS
               </button>
             </div>
           </div>
+
           <button
             type="submit"
-            className="mt-4 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+            disabled={saving}
+            className="mt-5 flex items-center gap-2 bg-jw-700 text-white px-6 py-2.5 rounded-lg hover:bg-jw-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium shadow-sm"
           >
-            Save Address
+            {saving ? (
+              <>
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Save Address
+              </>
+            )}
           </button>
         </form>
       )}
 
-      <div className="grid gap-4">
+      {addresses.length === 0 && !showForm && (
+        <div className="text-center py-16 bg-white rounded-xl border border-gray-100 animate-fade-in">
+          <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-jwtextm font-medium">No addresses yet</p>
+          <p className="text-gray-400 text-sm mt-1">Click "Add Address" to record the first one</p>
+        </div>
+      )}
+
+      <div className="space-y-3">
         {addresses.map((addr) => (
-          <div key={addr.id} className="bg-white p-4 rounded-lg shadow">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-lg font-semibold">{addr.name}</h3>
-                {addr.age && <p className="text-gray-600">Age: {addr.age}</p>}
-                {addr.family && <p className="text-gray-600">Family: {addr.family}</p>}
-                <p className="text-gray-600">{addr.address}</p>
+          <div
+            key={addr.id}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                <div className="mt-0.5 p-1.5 bg-jw-50 rounded-lg flex-shrink-0">
+                  <User className="w-4 h-4 text-jw-700" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-jwtext">{addr.name}</h3>
+                  <div className="mt-1.5 space-y-1">
+                    {addr.family && (
+                      <p className="text-sm text-jwtextm flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                        {addr.family}
+                      </p>
+                    )}
+                    {addr.age && (
+                      <p className="text-sm text-jwtextm flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                        Age: {addr.age}
+                      </p>
+                    )}
+                    <p className="text-sm text-jwtextm flex items-center gap-1.5">
+                      <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      {addr.address}
+                    </p>
+                  </div>
+                </div>
               </div>
+
               {addr.location_string && (
                 <a
                   href={addr.location_string}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                  className="flex items-center gap-1 bg-jw-50 text-jw-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-jw-100 transition-colors flex-shrink-0"
                 >
+                  <ExternalLink className="w-3.5 h-3.5" />
                   Maps
                 </a>
               )}
             </div>
           </div>
         ))}
-        {addresses.length === 0 && (
-          <p className="text-center text-gray-500 py-8">No addresses yet. Add one!</p>
-        )}
       </div>
     </div>
   );
