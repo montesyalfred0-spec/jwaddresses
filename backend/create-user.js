@@ -14,4 +14,5 @@ if (!username || !password || !name) {
 
 const hash = await bcrypt.hash(password, 10);
 console.log('SQL to create user:');
-console.log(`INSERT INTO users (username, password, name) VALUES ('${username}', '${hash}', '${name}');`);
+console.log(`INSERT INTO users (username, password, name) VALUES ($1, $2, $3);`);
+console.log(`Parameters: '${username}', '${hash}', '${name}'`);

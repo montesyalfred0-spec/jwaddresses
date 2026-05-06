@@ -4,8 +4,11 @@ export const getTerritories = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT t.*, 
-        json_agg(
-          json_build_object('id', n.id, 'name', n.name)
+        COALESCE(
+          json_agg(
+            CASE WHEN n.id IS NOT NULL THEN json_build_object('id', n.id, 'name', n.name) END
+          ) FILTER (WHERE n.id IS NOT NULL),
+          '[]'
         ) as neighborhoods
       FROM territories t
       LEFT JOIN neighborhoods n ON t.id = n.territory_id

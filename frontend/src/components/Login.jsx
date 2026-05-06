@@ -7,17 +7,21 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setError('');
     try {
       await login({ username, password });
       navigate('/territories');
     } catch (err) {
-      console.error(err);
-      setError('Invalid credentials');
+      setError(err.response?.data?.error || 'Unable to connect. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -58,9 +62,10 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            disabled={submitting}
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Login
+            {submitting ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>

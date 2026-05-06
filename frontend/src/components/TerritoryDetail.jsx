@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { addressAPI } from '../services/api';
 
 export default function TerritoryDetail() {
   const { neighborhoodId } = useParams();
+  const { state } = useLocation();
+  const neighborhoodName = state?.neighborhoodName || 'Addresses';
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [createError, setCreateError] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -21,19 +25,21 @@ export default function TerritoryDetail() {
 
   const fetchAddresses = async () => {
     try {
+      setFetchError(null);
       const { data } = await addressAPI.getAddresses(neighborhoodId);
       setAddresses(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching addresses:', error);
+      setFetchError(error.response?.data?.error || 'Failed to load addresses');
       setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setCreateError(null);
     if (!formData.location_string) {
-      alert('GPS location is required. Please click "Get GPS" to capture your location.');
+      setCreateError('GPS location is required. Please click "Get GPS" to capture your location.');
       return;
     }
     try {
@@ -48,9 +54,15 @@ export default function TerritoryDetail() {
       await addressAPI.createAddress(addressData);
       setFormData({ name: '', age: '', family: '', address: '', location_string: '' });
       setShowForm(false);
+      setCreateError(null);
       fetchAddresses();
     } catch (error) {
-      console.error('Error creating address:', error.response?.data || error);
+      const errData = error.response?.data;
+      if (Array.isArray(errData?.error)) {
+        setCreateError(errData.error.map(e => e.message).join(', '));
+      } else {
+        setCreateError(errData?.error || 'Failed to save address');
+      }
     }
   };
 
@@ -64,7 +76,7 @@ export default function TerritoryDetail() {
         },
         (error) => {
           console.error('Error getting location:', error);
-          alert('Could not get location. Please enter manually.');
+          setCreateError('Could not get location. Please enter the Google Maps link manually.');
         },
         {
           enableHighAccuracy: true,
@@ -73,11 +85,19 @@ export default function TerritoryDetail() {
         }
       );
     } else {
-      alert('Geolocation is not supported by this browser.');
+      setCreateError('Geolocation is not supported by this browser. Please enter the Google Maps link manually.');
     }
   };
 
   if (loading) return <div className="text-center p-8">Loading...</div>;
+  if (fetchError) return (
+    <div className="text-center p-8">
+      <p className="text-red-600 mb-4">{fetchError}</p>
+      <button onClick={fetchAddresses} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Retry
+      </button>
+    </div>
+  );
 
   return (
     <div>
@@ -85,7 +105,7 @@ export default function TerritoryDetail() {
         ← Back to Territories
       </Link>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Addresses</h1>
+        <h1 className="text-2xl font-bold">{neighborhoodName}</h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -96,6 +116,7 @@ export default function TerritoryDetail() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6">
+          {createError && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{createError}</div>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-700 mb-2">Name</label>
@@ -146,7 +167,6 @@ export default function TerritoryDetail() {
                 onChange={(e) => setFormData({ ...formData, location_string: e.target.value })}
                 className="flex-1 p-2 border rounded"
                 placeholder="Google Maps link"
-                readOnly
               />
               <button
                 type="button"
