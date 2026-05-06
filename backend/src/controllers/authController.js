@@ -38,6 +38,7 @@ export const login = async (req, res) => {
       user: { id: user.id, username: user.username, name: user.name }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -62,6 +63,7 @@ export const me = async (req, res) => {
 
     res.json({ user: result.rows[0] });
   } catch (error) {
+    console.error('Me endpoint error:', error);
     res.clearCookie('jwt');
     res.status(401).json({ error: 'Invalid token' });
   }

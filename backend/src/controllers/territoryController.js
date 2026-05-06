@@ -18,6 +18,7 @@ export const getTerritories = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
+    console.error('Get territories error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };

@@ -13,6 +13,7 @@ export const getAddresses = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
+    console.error('Get addresses error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -34,6 +35,7 @@ export const createAddress = async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors });
     }
+    console.error('Create address error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
