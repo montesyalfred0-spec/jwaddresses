@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { territoryAPI } from '../services/api';
-import { Map, ChevronRight, MapPin, AlertTriangle, RefreshCw, Search } from 'lucide-react';
+import { Map, ChevronRight, MapPin, AlertTriangle, RefreshCw } from 'lucide-react';
 
 const territoryColors = [
   'bg-jw-50 text-jw-700 border-jw-200',
@@ -89,20 +89,16 @@ export default function TerritoryList() {
         <p className="text-jwtextm text-sm ml-14">Seleccione un barrio para gestionar las direcciones</p>
       </div>
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4"
-          placeholder="Buscar barrio..."
-        />
-      </div>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full mb-6"
+        placeholder="Buscar barrio..."
+      />
 
       {filteredTerritories.length === 0 && searchQuery.trim() && (
         <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
-          <Search className="w-12 h-12 text-gray-300 mb-3" />
           <p className="text-jwtextm font-medium">No se encontraron barrios</p>
           <p className="text-gray-400 text-sm mt-1">Intente con otro término de búsqueda</p>
         </div>
